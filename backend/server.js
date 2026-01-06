@@ -48,6 +48,11 @@ app.get('/download', (req, res) => {
     const name = req.query.name || 'audio';
     const artist = req.query.artist || 'Unknown';
     const album = req.query.album || '';
+    const album_artist = req.query.album_artist || '';
+    const genre = req.query.genre || '';
+    const year = req.query.year || '';
+    const track = req.query.track || '';
+    const composer = req.query.composer || '';
 
     const filename = `${name} - ${artist}`.replace(/[^\w\s-]/gi, '') + '.mp3';
 
@@ -74,7 +79,12 @@ app.get('/download', (req, res) => {
             '-id3v2_version', '3',
             '-metadata', `title=${name}`,
             '-metadata', `artist=${artist}`,
-            '-metadata', `album=${album}`
+            '-metadata', `album=${album}`,
+            '-metadata', `album_artist=${album_artist}`,
+            '-metadata', `genre=${genre}`,
+            '-metadata', `date=${year}`,
+            '-metadata', `track=${track}`,
+            '-metadata', `composer=${composer}`
         )
         .on('error', (err) => {
             console.error('FFmpeg error:', err);
