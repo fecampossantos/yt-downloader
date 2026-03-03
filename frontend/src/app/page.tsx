@@ -48,7 +48,7 @@ export default function Home() {
 
     try {
       const res = await fetch(
-        `http://localhost:3001/info?url=${encodeURIComponent(url)}`
+        `/api/backend/info?url=${encodeURIComponent(url)}`
       );
       if (!res.ok) throw new Error("Could not fetch video info");
 
@@ -94,7 +94,7 @@ export default function Home() {
       });
 
       const response = await fetch(
-        `http://localhost:3001${endpoint}?${params.toString()}`
+        `/api/backend${endpoint}?${params.toString()}`
       );
 
       if (!response.ok) {
