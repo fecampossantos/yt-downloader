@@ -12,10 +12,7 @@ echo "Starting deployment script for Termux..."
 echo "=========================================="
 echo "0. Cleaning up used ports (3000, 3001)..."
 echo "=========================================="
-fuser -k 3000/tcp 2>/dev/null || true
-fuser -k 3001/tcp 2>/dev/null || true
-kill -9 $(lsof -t -i:3000) 2>/dev/null || true
-kill -9 $(lsof -t -i:3001) 2>/dev/null || true
+npx --yes kill-port 3000 3001 2>/dev/null || true
 echo "Ports cleaned."
 
 echo "=========================================="
@@ -78,8 +75,5 @@ npx --yes localtunnel --port 3000 | while read line; do
     echo "Localtunnel requires an IP password on the first visit!"
     echo "Your password is: $TUNNEL_PASSWORD"
     echo "=========================================="
-    echo "Scan this QR code to access your app on your phone:"
-    echo "=========================================="
-    npx --yes qrcode-terminal "$URL"
   fi
 done
