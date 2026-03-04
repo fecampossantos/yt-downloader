@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const { spawn } = require("child_process");
 const https = require("https");
+const ffmpegPath = require("ffmpeg-static");
 const { getVideoInfo, getAudioStreamUrl } = require("./youtubeFetcher");
 
 const app = express();
@@ -26,7 +27,9 @@ app.get("/info", async (req, res) => {
     const info = await getVideoInfo(videoURL);
     res.json(info);
   } catch (error) {
-    console.error("Custom Fetcher Info Error:", error);
+    console.error("Custom Fetcher Info Error:");
+    console.error(error);
+    if (error.stack) console.error(error.stack);
     res
       .status(500)
       .json({ error: "Failed to fetch video info", details: error.message });
@@ -86,8 +89,8 @@ app.get("/download-raw", async (req, res) => {
       "pipe:1", // Write MP3 back to stdout
     ];
 
-    // We assume ffmpeg is installed and available in the system PATH
-    const ffmpegProcess = spawn("ffmpeg", ffmpegArgs, { shell: false });
+    // We use ffmpeg-static binary from node_modules instead of the system PATH
+    const ffmpegProcess = spawn(ffmpegPath, ffmpegArgs, { shell: false });
 
     // Stream the raw audio data over HTTP from Googlevideo DIRECTLY into FFmpeg's STDIN.
     // This entirely replaces the need for yt-dlp.
@@ -124,8 +127,7 @@ app.get("/download-raw", async (req, res) => {
     ffmpegProcess.stdout.pipe(res);
 
     ffmpegProcess.stderr.on("data", (data) => {
-      // Note: FFmpeg logs all its processing info to stderr, even when successful.
-      // console.log(`ffmpeg info: ${data.toString()}`);
+      console.log(`[ffmpeg stderr] ${data.toString()}`);
     });
 
     ffmpegProcess.on("error", (err) => {
@@ -139,7 +141,9 @@ app.get("/download-raw", async (req, res) => {
       }
     });
   } catch (error) {
-    console.error("Failed to extract or pipe custom audio stream:", error);
+    console.error("Failed to extract or pipe custom audio stream:");
+    console.error(error);
+    if (error.stack) console.error(error.stack);
     if (!res.headersSent)
       res.status(500).json({
         error: "Failed to download raw video details",
