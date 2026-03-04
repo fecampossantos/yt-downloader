@@ -3,6 +3,14 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
+  serverExternalPackages: ["fluent-ffmpeg", "ffmpeg-static"], // Ensure ffmpeg isn't bundled by Next.js if ever imported
+  experimental: {
+    serverActions: {
+      allowedOrigins: ["*.loca.lt", "localhost:3000"],
+    },
+  },
+  // Allows Next.js development server to accept requests from Localtunnel without throwing "Cross origin request detected"
+  allowedDevOrigins: ["*.loca.lt", "localhost:3000"],
   async rewrites() {
     return [
       {
