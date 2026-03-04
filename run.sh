@@ -22,14 +22,14 @@ echo "=========================================="
 echo "1. Installing backend dependencies..."
 echo "=========================================="
 cd backend
-npm install
+npm install --no-save
 cd ..
 
 echo "=========================================="
 echo "2. Installing frontend dependencies..."
 echo "=========================================="
 cd frontend
-npm install
+npm install --no-save
 cd ..
 
 echo "=========================================="

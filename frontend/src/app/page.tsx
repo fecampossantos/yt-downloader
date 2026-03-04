@@ -39,8 +39,8 @@ export default function Home() {
     }
   }, [step]);
 
-  const handleFetch = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleFetch = async (e?: React.SyntheticEvent) => {
+    if (e) e.preventDefault();
     if (!url) return;
 
     setIsLoading(true);
@@ -131,8 +131,8 @@ export default function Home() {
     }
   };
 
-  const handleDownload = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleDownload = async (e?: React.SyntheticEvent) => {
+    if (e) e.preventDefault();
     await executeDownload("/download");
   };
 
@@ -171,31 +171,35 @@ export default function Home() {
 
         {/* STEP 1: INPUT */}
         {step === "input" && (
-          <form onSubmit={handleFetch}>
+          <div>
             <div className="input-group">
               <input
                 ref={urlInputRef}
                 type="text"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleFetch(e);
+                }}
                 placeholder="https://youtube.com/..."
                 className="input-field"
                 required
               />
             </div>
             <button
-              type="submit"
+              type="button"
+              onClick={handleFetch}
               className="btn btn-primary"
-              disabled={isLoading}
+              disabled={isLoading || !url}
             >
               {isLoading ? "Searching..." : "Fetch Video"}
             </button>
-          </form>
+          </div>
         )}
 
         {/* STEP 2: EDIT */}
         {step === "edit" && videoData && (
-          <form onSubmit={handleDownload}>
+          <div>
             {/* Preview Card */}
             <div className="video-preview">
               <img src={videoData.thumbnail} alt="" className="video-thumb" />
@@ -335,11 +339,15 @@ export default function Home() {
               >
                 download RAW
               </button>
-              <button type="submit" className="btn btn-primary">
+              <button
+                type="button"
+                onClick={handleDownload}
+                className="btn btn-primary"
+              >
                 Download MP3
               </button>
             </div>
-          </form>
+          </div>
         )}
 
         {/* STATUS MESSAGE */}
