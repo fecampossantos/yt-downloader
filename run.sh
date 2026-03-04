@@ -67,5 +67,19 @@ TAIL_PID=$!
 # Cleanup trap to kill background processes if the script is interrupted
 trap "echo 'Stopping servers...'; kill $BACKEND_PID $FRONTEND_PID $TAIL_PID; exit" INT TERM EXIT
 
-# Run localtunnel
-npx --yes localtunnel --port 3000
+# Run localtunnel and generate QR Code
+echo "Waiting for tunnel URL..."
+npx --yes localtunnel --port 3000 | while read line; do
+  echo "$line"
+  URL=$(echo "$line" | grep -o 'https://[^ ]*')
+  if [ ! -z "$URL" ]; then
+    TUNNEL_PASSWORD=$(curl -s https://loca.lt/mytunnelpassword)
+    echo "=========================================="
+    echo "Localtunnel requires an IP password on the first visit!"
+    echo "Your password is: $TUNNEL_PASSWORD"
+    echo "=========================================="
+    echo "Scan this QR code to access your app on your phone:"
+    echo "=========================================="
+    npx --yes qrcode-terminal "$URL"
+  fi
+done
