@@ -136,10 +136,6 @@ export default function Home() {
     await executeDownload("/download");
   };
 
-  const handleDownloadRaw = async () => {
-    await executeDownload("/download-raw");
-  };
-
   const reset = () => {
     setStep("input");
     setUrl("");
@@ -331,13 +327,6 @@ export default function Home() {
                 className="btn btn-secondary"
               >
                 Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleDownloadRaw}
-                className="btn btn-secondary"
-              >
-                download RAW
               </button>
               <button
                 type="button"
