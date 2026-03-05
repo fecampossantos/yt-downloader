@@ -14,8 +14,6 @@ app.use(
 );
 app.use(express.json());
 
-// Remove fluent-ffmpeg setup
-
 async function handleInfoRequest(req, res) {
   const videoURL = req.query.url;
   if (!videoURL) return res.status(400).json({ error: "No URL provided" });
@@ -53,8 +51,8 @@ async function handleDownloadRequest(req, res) {
   console.log(`Downloading Custom (No Dependencies): ${filename}`);
 
   try {
-    // Get the direct audio stream using ytdl-core
-    const audioStream = getAudioStream(videoURL);
+    // Get the direct audio stream using play-dl
+    const audioStream = await getAudioStream(videoURL);
 
     res.header("Content-Disposition", `attachment; filename="${filename}"`);
     res.header("Content-Type", "audio/mpeg");

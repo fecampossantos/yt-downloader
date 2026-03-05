@@ -1,21 +1,24 @@
-const ytdl = require("@distube/ytdl-core");
+const youtubedl = require("youtube-dl-exec");
 
 /**
  * Gets video metadata (Title, Author, Thumbnail) for the /info endpoint.
  */
 async function getVideoInfo(videoUrl) {
   try {
-    const info = await ytdl.getInfo(videoUrl);
-    const videoDetails = info.videoDetails;
-
-    const thumbnails = videoDetails.thumbnails;
-    const bestThumbnail = thumbnails[thumbnails.length - 1].url;
+    const info = await youtubedl(videoUrl, {
+      dumpJson: true,
+      noWarnings: true,
+      noCallHome: true,
+      noCheckCertificate: true,
+      preferFreeFormats: true,
+      youtubeSkipDashManifest: true,
+    });
 
     return {
-      title: videoDetails.title,
-      thumbnail: bestThumbnail,
-      author: videoDetails.author.name,
-      channel: videoDetails.author.id,
+      title: info.title,
+      thumbnail: info.thumbnail,
+      author: info.channel || info.uploader,
+      channel: info.channel_id || info.uploader_id,
     };
   } catch (err) {
     throw new Error(`Failed to fetch video info: ${err.message}`);
@@ -25,8 +28,15 @@ async function getVideoInfo(videoUrl) {
 /**
  * Gets a readable stream of the audio.
  */
-function getAudioStream(videoUrl) {
-  return ytdl(videoUrl, { filter: "audioonly", quality: "highestaudio" });
+async function getAudioStream(videoUrl) {
+  const subprocess = youtubedl.exec(videoUrl, {
+    output: "-",
+    format: "bestaudio",
+    noWarnings: true,
+    noCallHome: true,
+    noCheckCertificate: true,
+  });
+  return subprocess.stdout;
 }
 
 module.exports = {
